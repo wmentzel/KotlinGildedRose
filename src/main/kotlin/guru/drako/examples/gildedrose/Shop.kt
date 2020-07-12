@@ -1,7 +1,7 @@
 package guru.drako.examples.gildedrose
 
 class Shop(val items: List<Item>) {
-  fun updateQuality() {
+  fun runForOneDay() {
     for (item in items) {
       if (item.name != "Aged Brie" && item.name != "Backstage passes to a TAFKAL80ETC concert") {
         if (item.quality > 0) {
