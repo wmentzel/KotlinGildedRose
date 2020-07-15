@@ -63,27 +63,13 @@ class Shop(val items: List<Item>) {
           }
         }
         ItemNames.ConjuredManaCake -> {
+
           if (item.quality > 0) {
-            if (item.name != "Sulfuras, Hand of Ragnaros" && !item.name.contains("conjured", ignoreCase = true)) {
-              --item.quality
-            }
-
-            if (item.name.contains("conjured", ignoreCase = true)) {
-              item.quality -= 2
-            }
+            item.quality -= 2
           }
-          --item.sellIn
 
-          if (item.sellIn < 0) {
-            if (item.quality > 0) {
-              if (item.name != "Sulfuras, Hand of Ragnaros" && !item.name.contains("conjured", ignoreCase = true)) {
-                --item.quality
-              }
-
-              if (item.name.contains("conjured", ignoreCase = true)) {
-                item.quality -= 2
-              }
-            }
+          if (--item.sellIn < 0 && item.quality > 0) {
+            item.quality -= 2
           }
         }
       }
