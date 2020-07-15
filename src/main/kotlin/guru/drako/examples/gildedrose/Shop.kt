@@ -14,8 +14,11 @@ class Shop(val items: List<Item>) {
     for (item in items) {
 
       when (ItemNames.values().find { it.itemName == item.name }) {
-        ItemNames.AgedBrie -> if (item.quality < 50) {
-          ++item.quality
+        ItemNames.AgedBrie -> {
+          if (item.quality < 50) {
+            ++item.quality
+          }
+          --item.sellIn
         }
         ItemNames.BackstagePasses -> {
           if (item.quality < 50) {
@@ -33,15 +36,24 @@ class Shop(val items: List<Item>) {
               ++item.quality
             }
           }
-        }
-        ItemNames.Sulfuras -> degrateQuality(item)
-        ItemNames.DexterityVest -> degrateQuality(item)
-        ItemNames.ElixirOfTheMongoose -> degrateQuality(item)
-        ItemNames.ConjuredManaCake -> degrateQuality(item)
-      }
 
-      if (item.name != "Sulfuras, Hand of Ragnaros") {
-        --item.sellIn
+          --item.sellIn
+        }
+        ItemNames.Sulfuras -> {
+          degrateQuality(item)
+        }
+        ItemNames.DexterityVest -> {
+          degrateQuality(item)
+          --item.sellIn
+        }
+        ItemNames.ElixirOfTheMongoose -> {
+          degrateQuality(item)
+          --item.sellIn
+        }
+        ItemNames.ConjuredManaCake -> {
+          degrateQuality(item)
+          --item.sellIn
+        }
       }
 
       if (item.sellIn < 0) {
