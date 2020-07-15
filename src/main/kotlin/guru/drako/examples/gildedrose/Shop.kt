@@ -1,5 +1,14 @@
 package guru.drako.examples.gildedrose
 
+enum class ItemNames(val itemName: String) {
+  AgedBrie("Aged Brie"),
+  BackstagePasses("Backstage passes to a TAFKAL80ETC concert"),
+  DexterityVest("+5 Dexterity Vest"),
+  ElixirOfTheMongoose("Elixir of the Mongoose"),
+  Sulfuras("Sulfuras, Hand of Ragnaros"),
+  ConjuredManaCake("Conjured Mana Cake")
+}
+
 class Shop(val items: List<Item>) {
   fun runForOneDay() {
     for (item in items) {

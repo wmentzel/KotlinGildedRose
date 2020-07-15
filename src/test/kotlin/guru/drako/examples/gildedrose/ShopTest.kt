@@ -20,8 +20,8 @@ class ShopTest {
   @TestFactory
   fun `usual items should change correctly`() =
     listOf(
-      "+5 Dexterity Vest",
-      "Elixir of the Mongoose"
+      ItemName.DexterityVest.itemName,
+      ItemName.ElixirOfTheMongoose.itemName
     ).flatMap { itemName ->
       listOf(
         TestCase(
@@ -45,7 +45,7 @@ class ShopTest {
   @TestFactory
   fun `aged brie should change correctly`(): List<DynamicTest> {
 
-    val itemName = "Aged Brie"
+    val itemName = ItemName.AgedBrie.itemName
     return listOf(
       TestCase(
         description = "$itemName should increase in quality by 1 per day",
@@ -68,19 +68,19 @@ class ShopTest {
   @Test
   fun `sulfuras' sell in value & quality should not change`() {
 
-    val shop = Shop(listOf(Item(name = "Sulfuras, Hand of Ragnaros", sellIn = 1, quality = 80)))
+    val shop = Shop(listOf(Item(name = ItemName.Sulfuras.itemName, sellIn = 1, quality = 80)))
 
     shop.runForOneDay()
 
     assertEquals(
-      Item(name = "Sulfuras, Hand of Ragnaros", sellIn = 1, quality = 80),
+      Item(name = ItemName.Sulfuras.itemName, sellIn = 1, quality = 80),
       shop.items.first()
     )
   }
 
   @TestFactory
   fun `backstage passes should change correctly`(): List<DynamicTest> {
-    val itemName = "Backstage passes to a TAFKAL80ETC concert"
+    val itemName = ItemName.BackstagePasses.itemName
 
     return listOf(
       TestCase(
@@ -119,7 +119,7 @@ class ShopTest {
   @TestFactory
   fun `conjured items should change correctly`(): List<DynamicTest> {
 
-    val itemName = "Conjured Mana Cake"
+    val itemName = ItemName.ConjuredManaCake.itemName
 
     return listOf(
       TestCase(
