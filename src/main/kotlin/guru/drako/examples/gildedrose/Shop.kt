@@ -19,6 +19,12 @@ class Shop(val items: List<Item>) {
             ++item.quality
           }
           --item.sellIn
+
+          if (item.sellIn < 0) {
+            if (item.quality < 50) {
+              ++item.quality
+            }
+          }
         }
         ItemNames.BackstagePasses -> {
           if (item.quality < 50) {
@@ -38,49 +44,55 @@ class Shop(val items: List<Item>) {
           }
 
           --item.sellIn
+
+          if (item.sellIn < 0) {
+            item.quality -= item.quality
+          }
         }
         ItemNames.Sulfuras -> {
           degrateQuality(item)
+
+          if (item.sellIn < 0) {
+            degrateQuality(item)
+          }
         }
         ItemNames.DexterityVest -> {
           degrateQuality(item)
           --item.sellIn
+
+          if (item.sellIn < 0) {
+            degrateQuality(item)
+          }
         }
         ItemNames.ElixirOfTheMongoose -> {
           degrateQuality(item)
           --item.sellIn
+
+          if (item.sellIn < 0) {
+            degrateQuality(item)
+          }
         }
         ItemNames.ConjuredManaCake -> {
           degrateQuality(item)
           --item.sellIn
-        }
-      }
 
-      if (item.sellIn < 0) {
-        if (item.name != "Aged Brie") {
-          if (item.name != "Backstage passes to a TAFKAL80ETC concert") {
+          if (item.sellIn < 0) {
             degrateQuality(item)
-          } else {
-            item.quality -= item.quality
-          }
-        } else {
-          if (item.quality < 50) {
-            ++item.quality
           }
         }
       }
     }
   }
+}
 
-  private fun degrateQuality(item: Item) {
-    if (item.quality > 0) {
-      if (item.name != "Sulfuras, Hand of Ragnaros" && !item.name.contains("conjured", ignoreCase = true)) {
-        --item.quality
-      }
+private fun degrateQuality(item: Item) {
+  if (item.quality > 0) {
+    if (item.name != "Sulfuras, Hand of Ragnaros" && !item.name.contains("conjured", ignoreCase = true)) {
+      --item.quality
+    }
 
-      if (item.name.contains("conjured", ignoreCase = true)) {
-        item.quality -= 2
-      }
+    if (item.name.contains("conjured", ignoreCase = true)) {
+      item.quality -= 2
     }
   }
 }
