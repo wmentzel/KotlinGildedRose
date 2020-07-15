@@ -12,7 +12,6 @@ enum class ItemNames(val itemName: String) {
 class Shop(val items: List<Item>) {
   fun runForOneDay() {
     for (item in items) {
-
       when (ItemNames.values().find { it.itemName == item.name }) {
         ItemNames.AgedBrie -> {
 
@@ -43,17 +42,7 @@ class Shop(val items: List<Item>) {
         }
         ItemNames.Sulfuras -> {
         }
-        ItemNames.DexterityVest -> {
-          if (item.quality > 0) {
-            --item.quality
-          }
-
-          if (--item.sellIn < 0 && item.quality > 0) {
-            --item.quality
-          }
-        }
-        ItemNames.ElixirOfTheMongoose -> {
-
+        ItemNames.ElixirOfTheMongoose, ItemNames.DexterityVest -> {
           if (item.quality > 0) {
             --item.quality
           }
