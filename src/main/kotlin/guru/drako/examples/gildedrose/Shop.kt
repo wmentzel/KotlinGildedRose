@@ -1,6 +1,6 @@
 package guru.drako.examples.gildedrose
 
-enum class ItemNames(val itemName: String) {
+enum class ItemName(val itemName: String) {
   AgedBrie("Aged Brie"),
   BackstagePasses("Backstage passes to a TAFKAL80ETC concert"),
   DexterityVest("+5 Dexterity Vest"),
@@ -12,8 +12,8 @@ enum class ItemNames(val itemName: String) {
 class Shop(val items: List<Item>) {
   fun runForOneDay() {
     for (item in items) {
-      when (ItemNames.values().find { it.itemName == item.name }) {
-        ItemNames.AgedBrie -> {
+      when (ItemName.values().find { it.itemName == item.name }) {
+        ItemName.AgedBrie -> {
 
           if (item.quality < 50) {
             ++item.quality
@@ -23,7 +23,7 @@ class Shop(val items: List<Item>) {
             ++item.quality
           }
         }
-        ItemNames.BackstagePasses -> {
+        ItemName.BackstagePasses -> {
           if (item.quality < 50) {
             ++item.quality
           }
@@ -40,9 +40,9 @@ class Shop(val items: List<Item>) {
             item.quality -= item.quality
           }
         }
-        ItemNames.Sulfuras -> {
+        ItemName.Sulfuras -> {
         }
-        ItemNames.ElixirOfTheMongoose, ItemNames.DexterityVest -> {
+        ItemName.ElixirOfTheMongoose, ItemName.DexterityVest -> {
           if (item.quality > 0) {
             --item.quality
           }
@@ -51,7 +51,7 @@ class Shop(val items: List<Item>) {
             --item.quality
           }
         }
-        ItemNames.ConjuredManaCake -> {
+        ItemName.ConjuredManaCake -> {
 
           if (item.quality > 0) {
             item.quality -= 2
