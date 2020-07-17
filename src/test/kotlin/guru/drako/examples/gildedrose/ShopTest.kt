@@ -2,6 +2,7 @@ package guru.drako.examples.gildedrose
 
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.DynamicTest.dynamicTest
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle
@@ -11,141 +12,296 @@ import kotlin.test.assertEquals
 @TestInstance(Lifecycle.PER_CLASS)
 class ShopTest {
 
-  data class TestCase(
+  @Nested
+  inner class SellInTests {
+    @TestFactory
+    fun `'sell in' of items (except sulfuras) should decrease by 1 per day`() = ItemName.values().filter {
+      it != ItemName.Sulfuras
+    }.map(ItemName::itemName).flatMap { itemName ->
+
+      val qualityValues = 0..50 step 10
+      val sellInValues = -5..5
+
+      qualityValues.flatMap { qualityValue ->
+        sellInValues.map { sellInValue ->
+          sellInValue to qualityValue
+        }
+      }.map { (sellInValue, qualityValue) ->
+
+        val shop = Shop(listOf(Item(itemName, sellIn = sellInValue, quality = qualityValue)))
+
+        shop.runForOneDay()
+
+        dynamicTest("'sell in' should decrease correctly if quality is $qualityValue") {
+          assertEquals(
+            expected = sellInValue - 1,
+            actual = shop.items.first().sellIn,
+            message = "quality was $qualityValue"
+          )
+        }
+      }
+    }
+
+    @TestFactory
+    fun `'sell in' of sulfuras should not change`() = (-5..5).map { sellIn ->
+
+      val shop = Shop(listOf(Item(name = ItemName.Sulfuras.itemName, sellIn = sellIn, quality = 80)))
+
+      shop.runForOneDay()
+
+      dynamicTest("'sell in' of sulfuras should not change if it is $sellIn") {
+        assertEquals(expected = sellIn, actual = shop.items.first().sellIn)
+      }
+    }
+  }
+
+  data class QualityTestCase(
     val description: String,
     val initialItem: Item,
-    val expectedItem: Item
+    val expectedQuality: Int
   )
 
-  @TestFactory
-  fun `usual items should change correctly`() =
-    listOf(
-      ItemName.DexterityVest.itemName,
-      ItemName.ElixirOfTheMongoose.itemName
-    ).flatMap { itemName ->
-      listOf(
-        TestCase(
-          description = "$itemName should degrade correctly in 1 day",
-          initialItem = Item(name = itemName, sellIn = 10, quality = 20),
-          expectedItem = Item(name = itemName, sellIn = 9, quality = 19)
-        ),
-        TestCase(
-          description = "quality of $itemName should not go below zero",
-          initialItem = Item(name = itemName, sellIn = 1, quality = 0),
-          expectedItem = Item(name = itemName, sellIn = 0, quality = 0)
-        ),
-        TestCase(
-          description = "quality of $itemName should decrease by 2 (double as fast) if sell in is surpassed",
-          initialItem = Item(name = itemName, sellIn = 0, quality = 10),
-          expectedItem = Item(name = itemName, sellIn = -1, quality = 8)
-        )
-      )
-    }.map(this::createDynamicTest)
+  @Nested
+  inner class QualityTests {
 
-  @TestFactory
-  fun `aged brie should change correctly`(): List<DynamicTest> {
+    @Nested
+    inner class UsualItems {
 
-    val itemName = ItemName.AgedBrie.itemName
-    return listOf(
-      TestCase(
-        description = "$itemName should increase in quality by 1 per day",
-        initialItem = Item(name = itemName, sellIn = 2, quality = 0),
-        expectedItem = Item(name = itemName, sellIn = 1, quality = 1)
-      ),
-      TestCase(
-        description = "$itemName quality should not surpass 50",
-        initialItem = Item(name = itemName, sellIn = 2, quality = 50),
-        expectedItem = Item(name = itemName, sellIn = 1, quality = 50)
-      ),
-      TestCase(
-        description = "$itemName quality should increase twice as fast when sell in is surpassed",
-        initialItem = Item(name = itemName, sellIn = 0, quality = 39),
-        expectedItem = Item(name = itemName, sellIn = -1, quality = 41)
-      )
-    ).map(this::createDynamicTest)
-  }
+      @TestFactory
+      fun `quality of usual items should change correctly if 'sell in' is greater than 0`() =
+        listOf(
+          ItemName.DexterityVest.itemName,
+          ItemName.ElixirOfTheMongoose.itemName
+        ).flatMap { itemName ->
+          (1..5).map {
+            QualityTestCase(
+              description = "quality of $itemName should change correctly if 'sell in' is $it",
+              initialItem = Item(name = itemName, sellIn = it, quality = 20),
+              expectedQuality = 19
+            )
+          }
+        }.map(::createDynamicTest)
 
-  @Test
-  fun `sulfuras' sell in value & quality should not change`() {
+      @TestFactory
+      fun `quality of usual items should not go below zero if 'sell in' is greater than 0`() =
+        listOf(
+          ItemName.DexterityVest.itemName,
+          ItemName.ElixirOfTheMongoose.itemName
+        ).flatMap { itemName ->
+          (1..5).map {
+            QualityTestCase(
+              description = "quality of $itemName should not go below zero if 'sell in' is $it",
+              initialItem = Item(name = itemName, sellIn = it, quality = 0),
+              expectedQuality = 0
+            )
+          }
+        }.map(::createDynamicTest)
 
-    val shop = Shop(listOf(Item(name = ItemName.Sulfuras.itemName, sellIn = 1, quality = 80)))
 
-    shop.runForOneDay()
-
-    assertEquals(
-      Item(name = ItemName.Sulfuras.itemName, sellIn = 1, quality = 80),
-      shop.items.first()
-    )
-  }
-
-  @TestFactory
-  fun `backstage passes should change correctly`(): List<DynamicTest> {
-    val itemName = ItemName.BackstagePasses.itemName
-
-    return listOf(
-      TestCase(
-        description = "$itemName passes should degrade correctly",
-        initialItem = Item(name = itemName, sellIn = 15, quality = 20),
-        expectedItem = Item(name = itemName, sellIn = 14, quality = 21)
-      ),
-      TestCase(
-        description = "backstage passes should increase in quality by 2 if sell in is greater than 5 and less than or equal to 10",
-        initialItem = Item(name = itemName, sellIn = 10, quality = 0),
-        expectedItem = Item(name = itemName, sellIn = 9, quality = 2)
-      ),
-      TestCase(
-        description = "backstage passes should increase in quality by 3 if sell in less than or equal to 5",
-        initialItem = Item(name = itemName, sellIn = 5, quality = 0),
-        expectedItem = Item(name = itemName, sellIn = 4, quality = 3)
-      ),
-      TestCase(
-        description = "backstage passes quality should go to zero if the concert is over",
-        initialItem = Item(name = itemName, sellIn = 0, quality = 1),
-        expectedItem = Item(name = itemName, sellIn = -1, quality = 0)
-      ),
-      TestCase(
-        description = "backstage passes quality should not go below zero",
-        initialItem = Item(name = itemName, sellIn = 0, quality = 0),
-        expectedItem = Item(name = itemName, sellIn = -1, quality = 0)
-      ),
-      TestCase(
-        description = "backstage passes quality should not surpass 50",
-        initialItem = Item(name = itemName, sellIn = 15, quality = 50),
-        expectedItem = Item(name = itemName, sellIn = 14, quality = 50)
-      )
-    ).map(this::createDynamicTest)
-  }
-
-  @TestFactory
-  fun `conjured items should change correctly`(): List<DynamicTest> {
-
-    val itemName = ItemName.ConjuredManaCake.itemName
-
-    return listOf(
-      TestCase(
-        description = "conjured items should degrade quality by 2 in one day",
-        initialItem = Item(name = itemName, sellIn = 3, quality = 6),
-        expectedItem = Item(name = itemName, sellIn = 2, quality = 4)
-      ),
-      TestCase(
-        description = "quality of conjured items should be lowered by 4 (double as normal items) in one day when sell in has passed",
-        initialItem = Item(name = itemName, sellIn = 0, quality = 6),
-        expectedItem = Item(name = itemName, sellIn = -1, quality = 2)
-      ),
-      TestCase(
-        description = "quality of conjured items should never go below zero",
-        initialItem = Item(name = itemName, sellIn = 0, quality = 2),
-        expectedItem = Item(name = itemName, sellIn = -1, quality = 0)
-      )
-    ).map(this::createDynamicTest)
-  }
-
-  private fun createDynamicTest(testCase: TestCase): DynamicTest {
-    val shop = Shop(listOf(testCase.initialItem))
-    shop.runForOneDay()
-
-    return dynamicTest(testCase.description) {
-      assertEquals(expected = testCase.expectedItem, actual = shop.items.first())
+      @TestFactory
+      fun `quality of usual items should decrease by 2 (double as fast) if 'sell in' is less than or equal to 0`() =
+        listOf(
+          ItemName.DexterityVest.itemName,
+          ItemName.ElixirOfTheMongoose.itemName
+        ).flatMap { itemName ->
+          (-5..0).map {
+            QualityTestCase(
+              description = "quality of $itemName should decrease by 2 (double as fast) if 'sell in' is $it",
+              initialItem = Item(name = itemName, sellIn = it, quality = 10),
+              expectedQuality = 8
+            )
+          }
+        }.map(::createDynamicTest)
     }
+
+    @Nested
+    inner class AgedBrie {
+      @TestFactory
+      fun `quality of aged brie should increase in quality by 1 if 'sell in' is greater than zero`(): List<DynamicTest> {
+
+        val itemName = ItemName.AgedBrie.itemName
+        return (1..5).map {
+          QualityTestCase(
+            description = "quality of $itemName should increase in quality by 1 if 'sell in' is $it",
+            initialItem = Item(name = itemName, sellIn = it, quality = 0),
+            expectedQuality = 1
+          )
+        }.map(::createDynamicTest)
+      }
+
+      @TestFactory
+      fun `quality of aged brie should not surpass 50 if 'sell in' is greater than zero`(): List<DynamicTest> {
+
+        val itemName = ItemName.AgedBrie.itemName
+        return (1..5).map {
+          QualityTestCase(
+            description = "quality of $itemName should not surpass 50 if 'sell in' is $it",
+            initialItem = Item(name = itemName, sellIn = it, quality = 50),
+            expectedQuality = 50
+          )
+        }.map(::createDynamicTest)
+      }
+
+      @TestFactory
+      fun `quality of aged brie should increase by 2 when 'sell in' is lower or equal to zero`(): List<DynamicTest> {
+
+        val itemName = ItemName.AgedBrie.itemName
+        return (-5..0).map {
+          QualityTestCase(
+            description = "quality of $itemName should increase by 2 when 'sell in' is $it",
+            initialItem = Item(name = itemName, sellIn = it, quality = 39),
+            expectedQuality = 41
+          )
+        }.map(::createDynamicTest)
+      }
+    }
+
+    @Test
+    fun `quality of sulfuras should not change`() = (-5..5).map {
+      val shop = Shop(listOf(Item(name = ItemName.Sulfuras.itemName, sellIn = 1, quality = 80)))
+
+      shop.runForOneDay()
+
+      dynamicTest("quality of sulfuras should not change when 'sell in' is $it") {
+        assertEquals(expected = 80, actual = shop.items.first().quality)
+      }
+    }
+
+    @Nested
+    inner class BackstagePasses {
+
+      @TestFactory
+      fun `quality of backstage passes should change correctly`(): List<DynamicTest> {
+        val itemName = ItemName.BackstagePasses.itemName
+
+        return (11..15).map {
+          QualityTestCase(
+            description = "quality of $itemName should change correctly if 'sell in' is $it",
+            initialItem = Item(name = itemName, sellIn = it, quality = 20),
+            expectedQuality = 21
+          )
+        }.map(::createDynamicTest)
+      }
+
+      @TestFactory
+      fun `quality of backstage passes should increase by 2 if 'sell in' is greater than 5 and less than or equal to 10`(): List<DynamicTest> {
+        val itemName = ItemName.BackstagePasses.itemName
+
+        return (6..10).map {
+          QualityTestCase(
+            description = "quality of $itemName should increase by 2 if 'sell in' is $it",
+            initialItem = Item(name = itemName, sellIn = it, quality = 0),
+            expectedQuality = 2
+          )
+        }.map(::createDynamicTest)
+      }
+
+      @TestFactory
+      fun `quality of backstage passes should increase by 3 if 'sell in' is less than or equal to 5`(): List<DynamicTest> {
+        val itemName = ItemName.BackstagePasses.itemName
+
+        return (1..5).map {
+          QualityTestCase(
+            description = "quality of $itemName should increase by 3 if 'sell in' is less than or equal to 5",
+            initialItem = Item(name = itemName, sellIn = it, quality = 0),
+            expectedQuality = 3
+          )
+        }.map(::createDynamicTest)
+      }
+
+      @TestFactory
+      fun `quality of backstage passes should go to zero if the concert is over`(): List<DynamicTest> {
+        val itemName = ItemName.BackstagePasses.itemName
+
+        return (5..10).map {
+          QualityTestCase(
+            description = "quality of $itemName should go to zero if the concert is over",
+            initialItem = Item(name = itemName, sellIn = 0, quality = it),
+            expectedQuality = 0
+          )
+        }.map(::createDynamicTest)
+      }
+
+      @TestFactory
+      fun `quality of backstage passes should not go below zero`(): List<DynamicTest> {
+        val itemName = ItemName.BackstagePasses.itemName
+
+        return (-5..0).map {
+          QualityTestCase(
+            description = "quality of $itemName should not go below zero",
+            initialItem = Item(name = itemName, sellIn = it, quality = 0),
+            expectedQuality = 0
+          )
+        }.map(::createDynamicTest)
+      }
+
+      @TestFactory
+      fun `quality of backstage passes should not surpass 50`(): List<DynamicTest> {
+        val itemName = ItemName.BackstagePasses.itemName
+
+        return (1..10).map {
+          QualityTestCase(
+            description = "quality of $itemName should not surpass 50",
+            initialItem = Item(name = itemName, sellIn = it, quality = 50),
+            expectedQuality = 50
+          )
+        }.map(::createDynamicTest)
+      }
+
+      @Nested
+      inner class ConjuredMana {
+
+        @TestFactory
+        fun `conjured mana cake should change correctly in one day`(): List<DynamicTest> {
+
+          val itemName = ItemName.ConjuredManaCake.itemName
+
+          return (1..5).map {
+            QualityTestCase(
+              description = "quality of $itemName should decrease by 2 when sell in is $it",
+              initialItem = Item(name = itemName, sellIn = it, quality = 6),
+              expectedQuality = 4
+            )
+          }.map(::createDynamicTest)
+        }
+
+        @TestFactory
+        fun `quality of $temName should decrease by 4 (double as normal items) when 'sell in' is $it`(): List<DynamicTest> {
+
+          val itemName = ItemName.ConjuredManaCake.itemName
+
+          return (-5..0).map {
+            QualityTestCase(
+              description = "quality of $itemName should decrease by 4 (double as normal items) when sell in is lower or equal to zero",
+              initialItem = Item(name = itemName, sellIn = it, quality = 6),
+              expectedQuality = 2
+            )
+          }.map(::createDynamicTest)
+        }
+
+        @TestFactory
+        fun `quality of conjured mana should never go below zero`(): List<DynamicTest> {
+
+          val itemName = ItemName.ConjuredManaCake.itemName
+
+          return (-5..0).map {
+            QualityTestCase(
+              description = "quality of $itemName should never go below zero",
+              initialItem = Item(name = itemName, sellIn = it, quality = 2),
+              expectedQuality = 0
+            )
+          }.map(::createDynamicTest)
+        }
+      }
+    }
+  }
+}
+
+private fun createDynamicTest(qualityTestCase: ShopTest.QualityTestCase): DynamicTest {
+  val shop = Shop(listOf(qualityTestCase.initialItem))
+  shop.runForOneDay()
+
+  return dynamicTest(qualityTestCase.description) {
+    assertEquals(expected = qualityTestCase.expectedQuality, actual = shop.items.first().quality)
   }
 }
