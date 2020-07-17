@@ -1,20 +1,18 @@
 package guru.drako.examples.gildedrose
 
-enum class ItemName(val itemName: String) {
-  AgedBrie("Aged Brie"),
-  BackstagePasses("Backstage passes to a TAFKAL80ETC concert"),
-  DexterityVest("+5 Dexterity Vest"),
-  ElixirOfTheMongoose("Elixir of the Mongoose"),
-  Sulfuras("Sulfuras, Hand of Ragnaros"),
-  ConjuredManaCake("Conjured Mana Cake")
-}
+const val AGE_BRIE = "Aged Brie"
+const val BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert"
+const val DEXTERITY_VEST = "+5 Dexterity Vest"
+const val ELIXIR_OF_THE_MONGOOSE = "Elixir of the Mongoose"
+const val SULFURAS = "Sulfuras, Hand of Ragnaros"
+const val CONJURED_MANA_CAKE = "Conjured Mana Cake"
 
 class Shop(val items: List<Item>) {
   fun runForOneDay() {
     for (item in items) {
-      when (ItemName.values().find { it.itemName == item.name }) {
-        ItemName.AgedBrie -> {
 
+      when (item.name) {
+        AGE_BRIE -> {
           if (item.quality < 50) {
             ++item.quality
           }
@@ -23,7 +21,7 @@ class Shop(val items: List<Item>) {
             ++item.quality
           }
         }
-        ItemName.BackstagePasses -> {
+        BACKSTAGE_PASSES -> {
           if (item.quality < 50) {
             ++item.quality
           }
@@ -40,9 +38,9 @@ class Shop(val items: List<Item>) {
             item.quality -= item.quality
           }
         }
-        ItemName.Sulfuras -> {
+        SULFURAS -> {
         }
-        ItemName.ElixirOfTheMongoose, ItemName.DexterityVest -> {
+        ELIXIR_OF_THE_MONGOOSE, DEXTERITY_VEST -> {
           if (item.quality > 0) {
             --item.quality
           }
@@ -51,7 +49,7 @@ class Shop(val items: List<Item>) {
             --item.quality
           }
         }
-        ItemName.ConjuredManaCake -> {
+        CONJURED_MANA_CAKE -> {
 
           if (item.quality > 0) {
             item.quality -= 2
