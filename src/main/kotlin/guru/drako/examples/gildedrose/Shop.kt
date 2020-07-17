@@ -6,48 +6,51 @@ const val SULFURAS = "Sulfuras, Hand of Ragnaros"
 
 class Shop(val items: List<Item>) {
   fun runForOneDay() {
-    for (item in items) {
+    items.forEach(this::updateItem)
+  }
 
-      when (item.name) {
-        AGE_BRIE -> {
-          if (item.quality < 50) {
-            ++item.quality
-          }
+  private fun updateItem(item: Item) {
 
-          if (--item.sellIn < 0 && item.quality < 50) {
-            ++item.quality
-          }
+    if (item.name == SULFURAS) {
+      return
+    }
+
+    if (item.name in listOf(AGE_BRIE, BACKSTAGE_PASSES)) {
+      if (item.quality < 50) {
+        ++item.quality
+      }
+    }
+
+    when (item.name) {
+      AGE_BRIE -> {
+        if (--item.sellIn < 0 && item.quality < 50) {
+          ++item.quality
         }
-        BACKSTAGE_PASSES -> {
-          if (item.quality < 50) {
-            ++item.quality
-          }
+      }
+      BACKSTAGE_PASSES -> {
 
-          if (item.sellIn <= 10 && item.quality < 50) {
-            ++item.quality
-          }
-
-          if (item.sellIn <= 5 && item.quality < 50) {
-            ++item.quality
-          }
-
-          if (--item.sellIn < 0) {
-            item.quality -= item.quality
-          }
+        if (item.sellIn <= 10 && item.quality < 50) {
+          ++item.quality
         }
-        SULFURAS -> { /* do nothing */
+
+        if (item.sellIn <= 5 && item.quality < 50) {
+          ++item.quality
         }
-        else -> {
 
-          val degradeBy = if (item.name.contains("conjured", ignoreCase = true)) 2 else 1
+        if (--item.sellIn < 0) {
+          item.quality -= item.quality
+        }
+      }
+      else -> {
 
-          if (item.quality > 0) {
-            item.quality -= degradeBy
-          }
+        val degradeBy = if (item.name.contains("conjured", ignoreCase = true)) 2 else 1
 
-          if (--item.sellIn < 0 && item.quality > 0) {
-            item.quality -= degradeBy
-          }
+        if (item.quality > 0) {
+          item.quality -= degradeBy
+        }
+
+        if (--item.sellIn < 0 && item.quality > 0) {
+          item.quality -= degradeBy
         }
       }
     }
