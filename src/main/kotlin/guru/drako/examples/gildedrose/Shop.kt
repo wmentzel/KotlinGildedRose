@@ -42,27 +42,6 @@ class Shop(val items: List<Item>) {
           }
         }
         ItemNames.Sulfuras -> {
-          if (item.quality > 0) {
-            if (item.name != "Sulfuras, Hand of Ragnaros" && !item.name.contains("conjured", ignoreCase = true)) {
-              --item.quality
-            }
-
-            if (item.name.contains("conjured", ignoreCase = true)) {
-              item.quality -= 2
-            }
-          }
-
-          if (item.sellIn < 0) {
-            if (item.quality > 0) {
-              if (item.name != "Sulfuras, Hand of Ragnaros" && !item.name.contains("conjured", ignoreCase = true)) {
-                --item.quality
-              }
-
-              if (item.name.contains("conjured", ignoreCase = true)) {
-                item.quality -= 2
-              }
-            }
-          }
         }
         ItemNames.DexterityVest -> {
           if (item.quality > 0) {
