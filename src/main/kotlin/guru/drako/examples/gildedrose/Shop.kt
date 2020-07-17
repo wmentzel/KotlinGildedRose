@@ -26,11 +26,11 @@ class Shop(val items: List<Item>) {
             ++item.quality
           }
 
-          if (item.sellIn < 11 && item.quality < 50) {
+          if (item.sellIn <= 10 && item.quality < 50) {
             ++item.quality
           }
 
-          if (item.sellIn < 6 && item.quality < 50) {
+          if (item.sellIn <= 5 && item.quality < 50) {
             ++item.quality
           }
 
@@ -38,25 +38,18 @@ class Shop(val items: List<Item>) {
             item.quality -= item.quality
           }
         }
-        SULFURAS -> {
+        SULFURAS -> { /* do nothing */
         }
-        ELIXIR_OF_THE_MONGOOSE, DEXTERITY_VEST -> {
+        else -> {
+
+          val degradeBy = if (item.name.contains("conjured", ignoreCase = true)) 2 else 1
+
           if (item.quality > 0) {
-            --item.quality
+            item.quality -= degradeBy
           }
 
           if (--item.sellIn < 0 && item.quality > 0) {
-            --item.quality
-          }
-        }
-        CONJURED_MANA_CAKE -> {
-
-          if (item.quality > 0) {
-            item.quality -= 2
-          }
-
-          if (--item.sellIn < 0 && item.quality > 0) {
-            item.quality -= 2
+            item.quality -= degradeBy
           }
         }
       }
