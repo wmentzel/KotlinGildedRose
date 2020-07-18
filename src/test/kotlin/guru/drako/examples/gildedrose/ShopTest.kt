@@ -223,13 +223,14 @@ class ShopTest {
         }.map(::createDynamicTest)
 
         @TestFactory
-        fun `quality of $temName should decrease by 4 (double as normal items) when 'sell in' is $it`() = (-5..0).map {
-          QualityTestCase(
-            description = "quality of conjured items should decrease by 4 (double as normal items) when sell in is lower or equal to zero",
-            initialItem = Item(name = CONJURED_MANA_CAKE, sellIn = it, quality = 6),
-            expectedQuality = 2
-          )
-        }.map(::createDynamicTest)
+        fun `quality of conjured mana should decrease by 4 (double as normal items) when 'sell in' is $it`() =
+          (-5..0).map {
+            QualityTestCase(
+              description = "quality of conjured items should decrease by 4 (double as normal items) when sell in is lower or equal to zero",
+              initialItem = Item(name = CONJURED_MANA_CAKE, sellIn = it, quality = 6),
+              expectedQuality = 2
+            )
+          }.map(::createDynamicTest)
 
         @TestFactory
         fun `quality of conjured mana should never go below zero`() = (-5..0).map {
