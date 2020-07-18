@@ -9,6 +9,12 @@ import org.junit.jupiter.api.TestInstance.Lifecycle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+const val DEXTERITY_VEST = "+5 Dexterity Vest"
+const val ELIXIR_OF_THE_MONGOOSE = "Elixir of the Mongoose"
+const val CONJURED_MANA_CAKE = "Conjured Mana Cake"
+const val RANDOM_ITEM_1 = "Lorem ipsum dolor"
+const val RANDOM_ITEM_2 = "At vero eos"
+
 @TestInstance(Lifecycle.PER_CLASS)
 class ShopTest {
 
@@ -16,11 +22,8 @@ class ShopTest {
   inner class SellInTests {
     @TestFactory
     fun `'sell in' of items (except sulfuras) should decrease by 1 per day`() = listOf(
-      AGE_BRIE,
-      BACKSTAGE_PASSES,
-      DEXTERITY_VEST,
-      ELIXIR_OF_THE_MONGOOSE,
-      CONJURED_MANA_CAKE
+      AGE_BRIE, BACKSTAGE_PASSES, DEXTERITY_VEST, ELIXIR_OF_THE_MONGOOSE,
+      CONJURED_MANA_CAKE, RANDOM_ITEM_1, RANDOM_ITEM_2
     ).flatMap { itemName ->
 
       val qualityValues = 0..50 step 10
@@ -39,8 +42,7 @@ class ShopTest {
         dynamicTest("'sell in' should decrease correctly if quality is $qualityValue") {
           assertEquals(
             expected = sellInValue - 1,
-            actual = shop.items.first().sellIn,
-            message = "quality was $qualityValue"
+            actual = shop.items.first().sellIn
           )
         }
       }
@@ -73,10 +75,7 @@ class ShopTest {
 
       @TestFactory
       fun `quality of usual items should change correctly if 'sell in' is greater than 0`() =
-        listOf(
-          DEXTERITY_VEST,
-          ELIXIR_OF_THE_MONGOOSE
-        ).flatMap { itemName ->
+        listOf(DEXTERITY_VEST, ELIXIR_OF_THE_MONGOOSE, RANDOM_ITEM_1, RANDOM_ITEM_2).flatMap { itemName ->
           (1..5).map {
             QualityTestCase(
               description = "quality of $itemName should change correctly if 'sell in' is $it",
@@ -88,10 +87,7 @@ class ShopTest {
 
       @TestFactory
       fun `quality of usual items should not go below zero if 'sell in' is greater than 0`() =
-        listOf(
-          DEXTERITY_VEST,
-          ELIXIR_OF_THE_MONGOOSE
-        ).flatMap { itemName ->
+        listOf(DEXTERITY_VEST, ELIXIR_OF_THE_MONGOOSE, RANDOM_ITEM_1, RANDOM_ITEM_2).flatMap { itemName ->
           (1..5).map {
             QualityTestCase(
               description = "quality of $itemName should not go below zero if 'sell in' is $it",
@@ -103,10 +99,7 @@ class ShopTest {
 
       @TestFactory
       fun `quality of usual items should decrease by 2 (double as fast) if 'sell in' is less than or equal to 0`() =
-        listOf(
-          DEXTERITY_VEST,
-          ELIXIR_OF_THE_MONGOOSE
-        ).flatMap { itemName ->
+        listOf(DEXTERITY_VEST, ELIXIR_OF_THE_MONGOOSE, RANDOM_ITEM_1, RANDOM_ITEM_2).flatMap { itemName ->
           (-5..0).map {
             QualityTestCase(
               description = "quality of $itemName should decrease by 2 (double as fast) if 'sell in' is $it",

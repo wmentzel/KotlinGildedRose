@@ -2,10 +2,7 @@ package guru.drako.examples.gildedrose
 
 const val AGE_BRIE = "Aged Brie"
 const val BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert"
-const val DEXTERITY_VEST = "+5 Dexterity Vest"
-const val ELIXIR_OF_THE_MONGOOSE = "Elixir of the Mongoose"
 const val SULFURAS = "Sulfuras, Hand of Ragnaros"
-const val CONJURED_MANA_CAKE = "Conjured Mana Cake"
 
 class Shop(val items: List<Item>) {
   fun runForOneDay() {
