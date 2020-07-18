@@ -29,16 +29,14 @@ class Shop(val items: List<Item>) {
       }
       BACKSTAGE_PASSES -> {
 
-        if (item.sellIn <= 10 && item.quality < 50) {
-          ++item.quality
-        }
-
-        if (item.sellIn <= 5 && item.quality < 50) {
-          ++item.quality
+        listOf(10, 5).forEach {
+          if (item.sellIn <= it && item.quality < 50) {
+            ++item.quality
+          }
         }
 
         if (--item.sellIn < 0) {
-          item.quality -= item.quality
+          item.quality = 0
         }
       }
       else -> {
