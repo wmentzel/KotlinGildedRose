@@ -3,24 +3,25 @@ package guru.drako.examples.gildedrose
 const val AGED_BRIE = "Aged Brie"
 const val SULFURAS = "Sulfuras, Hand of Ragnaros"
 
-enum class ItemType {
-  AgedBrie,
-  BackstagePasses,
-  Conjured,
-  UsualItem,
-  SulfurasHandOfRagnaros
-}
+class Shop(val items: List<Item>) {
 
-val Item.type
-  get() = when {
-    this.name == AGED_BRIE -> ItemType.AgedBrie
-    this.name == SULFURAS -> ItemType.SulfurasHandOfRagnaros
-    this.name.startsWith("backstage passes", ignoreCase = true) -> ItemType.BackstagePasses
-    this.name.startsWith("conjured", ignoreCase = true) -> ItemType.Conjured
-    else -> ItemType.UsualItem
+  private enum class ItemType {
+    AgedBrie, BackstagePasses, Conjured,
+    UsualItem, SulfurasHandOfRagnaros
   }
 
-class Shop(val items: List<Item>) {
+  private val Item.type
+    get() = when {
+      this.name == AGED_BRIE -> ItemType.AgedBrie
+      this.name == SULFURAS -> ItemType.SulfurasHandOfRagnaros
+      this.name.startsWith("backstage passes", ignoreCase = true) -> ItemType.BackstagePasses
+      this.name.startsWith("conjured", ignoreCase = true) -> ItemType.Conjured
+      else -> ItemType.UsualItem
+    }
+
+  private fun Item.changeQualityBy(delta: Int) {
+    quality = (quality + delta).coerceIn(0, 50)
+  }
 
   fun runForOneDay() {
     items.forEach { item ->
@@ -49,9 +50,5 @@ class Shop(val items: List<Item>) {
         --item.sellIn
       }
     }
-  }
-
-  private fun Item.changeQualityBy(delta: Int) {
-    quality = (quality + delta).coerceIn(0, 50)
   }
 }
