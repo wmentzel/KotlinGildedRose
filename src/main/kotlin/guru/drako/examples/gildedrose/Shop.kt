@@ -18,22 +18,20 @@ class Shop(val items: List<Item>) {
     --item.sellIn
 
     if (item.name in listOf(AGE_BRIE, BACKSTAGE_PASSES)) {
-      if (item.quality < 50) {
-        ++item.quality
-      }
+      increaseQualityWithinBounds(item)
     }
 
     when (item.name) {
       AGE_BRIE -> {
-        if (item.sellIn < 0 && item.quality < 50) {
-          ++item.quality
+        if (item.sellIn < 0) {
+          increaseQualityWithinBounds(item)
         }
       }
       BACKSTAGE_PASSES -> {
 
         listOf(10, 5).forEach {
-          if (item.sellIn + 1 <= it && item.quality < 50) {
-            ++item.quality
+          if (item.sellIn + 1 <= it) {
+            increaseQualityWithinBounds(item)
           }
         }
 
@@ -53,6 +51,12 @@ class Shop(val items: List<Item>) {
           item.quality -= degradeBy
         }
       }
+    }
+  }
+
+  private fun increaseQualityWithinBounds(item: Item) {
+    if (item.quality < 50) {
+      ++item.quality
     }
   }
 }
