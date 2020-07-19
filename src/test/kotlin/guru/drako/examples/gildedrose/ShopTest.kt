@@ -13,8 +13,7 @@ const val DEXTERITY_VEST = "+5 Dexterity Vest"
 const val ELIXIR_OF_THE_MONGOOSE = "Elixir of the Mongoose"
 const val CONJURED_MANA_CAKE = "Conjured Mana Cake"
 const val BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert"
-const val RANDOM_ITEM_1 = "Lorem ipsum dolor"
-const val RANDOM_ITEM_2 = "At vero eos"
+const val RANDOM_ITEM = "Lorem ipsum dolor"
 
 @TestInstance(Lifecycle.PER_CLASS)
 class ShopTest {
@@ -24,7 +23,7 @@ class ShopTest {
     @TestFactory
     fun `'sell in' of items (except sulfuras) should decrease by 1 per day`() = listOf(
       AGED_BRIE, BACKSTAGE_PASSES, DEXTERITY_VEST, ELIXIR_OF_THE_MONGOOSE,
-      CONJURED_MANA_CAKE, RANDOM_ITEM_1, RANDOM_ITEM_2
+      CONJURED_MANA_CAKE, RANDOM_ITEM
     ).flatMap { itemName ->
 
       val qualityValues = 0..50 step 10
@@ -76,7 +75,7 @@ class ShopTest {
 
       @TestFactory
       fun `quality of usual items should change correctly if 'sell in' is greater than 0`() =
-        listOf(DEXTERITY_VEST, ELIXIR_OF_THE_MONGOOSE, RANDOM_ITEM_1, RANDOM_ITEM_2).flatMap { itemName ->
+        listOf(DEXTERITY_VEST, ELIXIR_OF_THE_MONGOOSE, RANDOM_ITEM).flatMap { itemName ->
           (1..5).map {
             QualityTestCase(
               description = "quality of $itemName should change correctly if 'sell in' is $it",
@@ -88,7 +87,7 @@ class ShopTest {
 
       @TestFactory
       fun `quality of usual items should not go below zero if 'sell in' is greater than 0`() =
-        listOf(DEXTERITY_VEST, ELIXIR_OF_THE_MONGOOSE, RANDOM_ITEM_1, RANDOM_ITEM_2).flatMap { itemName ->
+        listOf(DEXTERITY_VEST, ELIXIR_OF_THE_MONGOOSE, RANDOM_ITEM).flatMap { itemName ->
           (1..5).map {
             QualityTestCase(
               description = "quality of $itemName should not go below zero if 'sell in' is $it",
@@ -100,7 +99,7 @@ class ShopTest {
 
       @TestFactory
       fun `quality of usual items should decrease by 2 (double as fast) if 'sell in' is less than or equal to 0`() =
-        listOf(DEXTERITY_VEST, ELIXIR_OF_THE_MONGOOSE, RANDOM_ITEM_1, RANDOM_ITEM_2).flatMap { itemName ->
+        listOf(DEXTERITY_VEST, ELIXIR_OF_THE_MONGOOSE, RANDOM_ITEM).flatMap { itemName ->
           (-5..0).map {
             QualityTestCase(
               description = "quality of $itemName should decrease by 2 (double as fast) if 'sell in' is $it",
