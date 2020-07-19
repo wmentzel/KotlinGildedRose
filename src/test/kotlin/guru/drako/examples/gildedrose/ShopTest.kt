@@ -177,7 +177,7 @@ class ShopTest {
       @TestFactory
       fun `quality of backstage passes should increase by 3 if 'sell in' is less than or equal to 5`() = (1..5).map {
         QualityTestCase(
-          description = "quality of $BACKSTAGE_PASSES should increase by 3 if 'sell in' is less than or equal to 5",
+          description = "quality of $BACKSTAGE_PASSES should increase by 3 if 'sell in' is $it",
           initialItem = Item(name = BACKSTAGE_PASSES, sellIn = it, quality = 0),
           expectedQuality = 3
         )
@@ -187,7 +187,7 @@ class ShopTest {
       @TestFactory
       fun `quality of backstage passes should go to zero if the concert is over`() = (5..10).map {
         QualityTestCase(
-          description = "quality of $BACKSTAGE_PASSES should go to zero if the concert is over",
+          description = "quality of $BACKSTAGE_PASSES should go to zero if the concert is over and quality is $it",
           initialItem = Item(name = BACKSTAGE_PASSES, sellIn = 0, quality = it),
           expectedQuality = 0
         )
@@ -196,7 +196,7 @@ class ShopTest {
       @TestFactory
       fun `quality of backstage passes should not go below zero`() = (-5..0).map {
         QualityTestCase(
-          description = "quality of $BACKSTAGE_PASSES should not go below zero",
+          description = "quality of $BACKSTAGE_PASSES should not go below zero if 'sell in' is $it",
           initialItem = Item(name = BACKSTAGE_PASSES, sellIn = it, quality = 0),
           expectedQuality = 0
         )
@@ -205,7 +205,7 @@ class ShopTest {
       @TestFactory
       fun `quality of backstage passes should not surpass 50`() = (1..10).map {
         QualityTestCase(
-          description = "quality of $BACKSTAGE_PASSES should not surpass 50",
+          description = "quality of $BACKSTAGE_PASSES should not surpass 50 if 'sell in' is $it",
           initialItem = Item(name = BACKSTAGE_PASSES, sellIn = it, quality = 50),
           expectedQuality = 50
         )
@@ -217,17 +217,17 @@ class ShopTest {
         @TestFactory
         fun `conjured mana cake should change correctly in one day`() = (1..5).map {
           QualityTestCase(
-            description = "quality of conjured items should decrease by 2 when sell in is $it",
+            description = "quality of conjured items should decrease by 2 when 'sell in' is $it",
             initialItem = Item(name = CONJURED_MANA_CAKE, sellIn = it, quality = 6),
             expectedQuality = 4
           )
         }.map(::createDynamicTest)
 
         @TestFactory
-        fun `quality of conjured mana should decrease by 4 (double as normal items) when 'sell in' is $it`() =
+        fun `quality of conjured mana should decrease by 4 (double as normal items)`() =
           (-5..0).map {
             QualityTestCase(
-              description = "quality of conjured items should decrease by 4 (double as normal items) when sell in is lower or equal to zero",
+              description = "quality of conjured items should decrease by 4 (double as normal items) if 'sell in' is $it",
               initialItem = Item(name = CONJURED_MANA_CAKE, sellIn = it, quality = 6),
               expectedQuality = 2
             )
@@ -236,7 +236,7 @@ class ShopTest {
         @TestFactory
         fun `quality of conjured mana should never go below zero`() = (-5..0).map {
           QualityTestCase(
-            description = "quality of conjured items should never go below zero",
+            description = "quality of conjured items should never go below zero if 'sell in' is $it",
             initialItem = Item(name = CONJURED_MANA_CAKE, sellIn = it, quality = 2),
             expectedQuality = 0
           )
