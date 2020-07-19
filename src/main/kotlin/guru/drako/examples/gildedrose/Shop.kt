@@ -19,36 +19,37 @@ class Shop(val items: List<Item>) {
       else -> ItemType.UsualItem
     }
 
-  private fun Item.changeQualityBy(delta: Int) {
-    quality = (quality + delta).coerceIn(0, 50)
+  private fun Item.ageOneDay() {
+
+    fun Item.changeQualityBy(delta: Int) {
+      quality = (quality + delta).coerceIn(0, 50)
+    }
+
+    when (type) {
+      ItemType.AgedBrie -> changeQualityBy(if (sellIn > 0) 1 else 2)
+
+      ItemType.BackstagePasses -> {
+        changeQualityBy(
+          when {
+            sellIn > 10 -> 1
+            sellIn > 5 -> 2
+            sellIn > 0 -> 3
+            else -> -quality
+          }
+        )
+      }
+      ItemType.Conjured -> changeQualityBy(if (sellIn > 0) -2 else -4)
+      ItemType.UsualItem -> changeQualityBy(if (sellIn > 0) -1 else -2)
+      ItemType.SulfurasHandOfRagnaros -> {
+      }
+    }
+
+    if (type != ItemType.SulfurasHandOfRagnaros) {
+      --sellIn
+    }
   }
 
   fun runForOneDay() {
-    items.forEach { item ->
-      // quality
-      when (item.type) {
-        ItemType.AgedBrie -> item.changeQualityBy(if (item.sellIn > 0) 1 else 2)
-
-        ItemType.BackstagePasses -> {
-          item.changeQualityBy(
-            when {
-              item.sellIn > 10 -> 1
-              item.sellIn > 5 -> 2
-              item.sellIn > 0 -> 3
-              else -> -item.quality
-            }
-          )
-        }
-        ItemType.Conjured -> item.changeQualityBy(if (item.sellIn > 0) -2 else -4)
-        ItemType.UsualItem -> item.changeQualityBy(if (item.sellIn > 0) -1 else -2)
-        ItemType.SulfurasHandOfRagnaros -> {
-        }
-      }
-
-      // sell in
-      if (item.type != ItemType.SulfurasHandOfRagnaros) {
-        --item.sellIn
-      }
-    }
+    items.forEach { it.ageOneDay() }
   }
 }
