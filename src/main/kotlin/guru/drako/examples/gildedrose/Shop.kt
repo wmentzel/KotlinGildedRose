@@ -26,20 +26,20 @@ class Shop(val items: List<Item>) {
     items.forEach { item ->
       // quality
       when (item.type) {
-        ItemType.AgedBrie -> item.changeQualityBy(if (item.sellIn <= 0) 2 else 1)
+        ItemType.AgedBrie -> item.changeQualityBy(if (item.sellIn > 0) 1 else 2)
 
         ItemType.BackstagePasses -> {
           item.changeQualityBy(
             when {
-              item.sellIn <= 0 -> -item.quality
-              item.sellIn <= 5 -> 3
-              item.sellIn <= 10 -> 2
-              else -> 1
+              item.sellIn > 10 -> 1
+              item.sellIn > 5 -> 2
+              item.sellIn > 0 -> 3
+              else -> -item.quality
             }
           )
         }
-        ItemType.Conjured -> item.changeQualityBy(if (item.sellIn <= 0) -4 else -2)
-        ItemType.UsualItem -> item.changeQualityBy(if (item.sellIn <= 0) -2 else -1)
+        ItemType.Conjured -> item.changeQualityBy(if (item.sellIn > 0) -2 else -4)
+        ItemType.UsualItem -> item.changeQualityBy(if (item.sellIn > 0) -1 else -2)
         ItemType.SulfurasHandOfRagnaros -> {
         }
       }
