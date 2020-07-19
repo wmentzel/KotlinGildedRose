@@ -15,6 +15,8 @@ class Shop(val items: List<Item>) {
       return
     }
 
+    --item.sellIn
+
     if (item.name in listOf(AGE_BRIE, BACKSTAGE_PASSES)) {
       if (item.quality < 50) {
         ++item.quality
@@ -23,19 +25,19 @@ class Shop(val items: List<Item>) {
 
     when (item.name) {
       AGE_BRIE -> {
-        if (--item.sellIn < 0 && item.quality < 50) {
+        if (item.sellIn < 0 && item.quality < 50) {
           ++item.quality
         }
       }
       BACKSTAGE_PASSES -> {
 
         listOf(10, 5).forEach {
-          if (item.sellIn <= it && item.quality < 50) {
+          if (item.sellIn + 1 <= it && item.quality < 50) {
             ++item.quality
           }
         }
 
-        if (--item.sellIn < 0) {
+        if (item.sellIn < 0) {
           item.quality = 0
         }
       }
@@ -47,7 +49,7 @@ class Shop(val items: List<Item>) {
           item.quality -= degradeBy
         }
 
-        if (--item.sellIn < 0 && item.quality > 0) {
+        if (item.sellIn < 0 && item.quality > 0) {
           item.quality -= degradeBy
         }
       }
