@@ -12,6 +12,7 @@ import kotlin.test.assertEquals
 const val DEXTERITY_VEST = "+5 Dexterity Vest"
 const val ELIXIR_OF_THE_MONGOOSE = "Elixir of the Mongoose"
 const val CONJURED_MANA_CAKE = "Conjured Mana Cake"
+const val BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert"
 const val RANDOM_ITEM_1 = "Lorem ipsum dolor"
 const val RANDOM_ITEM_2 = "At vero eos"
 
@@ -22,7 +23,7 @@ class ShopTest {
   inner class SellInTests {
     @TestFactory
     fun `'sell in' of items (except sulfuras) should decrease by 1 per day`() = listOf(
-      AGE_BRIE, BACKSTAGE_PASSES, DEXTERITY_VEST, ELIXIR_OF_THE_MONGOOSE,
+      AGED_BRIE, BACKSTAGE_PASSES, DEXTERITY_VEST, ELIXIR_OF_THE_MONGOOSE,
       CONJURED_MANA_CAKE, RANDOM_ITEM_1, RANDOM_ITEM_2
     ).flatMap { itemName ->
 
@@ -115,8 +116,8 @@ class ShopTest {
       @TestFactory
       fun `quality of aged brie should increase in quality by 1 if 'sell in' is greater than zero`() = (1..5).map {
         QualityTestCase(
-          description = "quality of $AGE_BRIE should increase in quality by 1 if 'sell in' is $it",
-          initialItem = Item(name = AGE_BRIE, sellIn = it, quality = 0),
+          description = "quality of $AGED_BRIE should increase in quality by 1 if 'sell in' is $it",
+          initialItem = Item(name = AGED_BRIE, sellIn = it, quality = 0),
           expectedQuality = 1
         )
       }.map(::createDynamicTest)
@@ -124,8 +125,8 @@ class ShopTest {
       @TestFactory
       fun `quality of aged brie should not surpass 50 if 'sell in' is greater than zero`() = (1..5).map {
         QualityTestCase(
-          description = "quality of $AGE_BRIE should not surpass 50 if 'sell in' is $it",
-          initialItem = Item(name = AGE_BRIE, sellIn = it, quality = 50),
+          description = "quality of $AGED_BRIE should not surpass 50 if 'sell in' is $it",
+          initialItem = Item(name = AGED_BRIE, sellIn = it, quality = 50),
           expectedQuality = 50
         )
       }.map(::createDynamicTest)
@@ -133,8 +134,8 @@ class ShopTest {
       @TestFactory
       fun `quality of aged brie should increase by 2 when 'sell in' is lower or equal to zero`() = (-5..0).map {
         QualityTestCase(
-          description = "quality of $AGE_BRIE should increase by 2 when 'sell in' is $it",
-          initialItem = Item(name = AGE_BRIE, sellIn = it, quality = 39),
+          description = "quality of $AGED_BRIE should increase by 2 when 'sell in' is $it",
+          initialItem = Item(name = AGED_BRIE, sellIn = it, quality = 39),
           expectedQuality = 41
         )
       }.map(::createDynamicTest)

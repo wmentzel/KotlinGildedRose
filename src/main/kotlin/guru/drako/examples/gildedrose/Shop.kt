@@ -1,71 +1,57 @@
 package guru.drako.examples.gildedrose
 
-import kotlin.math.max
-import kotlin.math.min
-
-const val AGE_BRIE = "Aged Brie"
-const val BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert"
+const val AGED_BRIE = "Aged Brie"
 const val SULFURAS = "Sulfuras, Hand of Ragnaros"
 
 enum class ItemType {
   AgedBrie,
   BackstagePasses,
-  ConjuredItems,
-  UsualItems,
-  Sulfuras
+  Conjured,
+  UsualItem,
+  SulfurasHandOfRagnaros
 }
 
 val Item.type
   get() = when {
-    this.name == AGE_BRIE -> ItemType.AgedBrie
+    this.name == AGED_BRIE -> ItemType.AgedBrie
+    this.name == SULFURAS -> ItemType.SulfurasHandOfRagnaros
     this.name.startsWith("backstage passes", ignoreCase = true) -> ItemType.BackstagePasses
-    this.name == SULFURAS -> ItemType.Sulfuras
-    this.name.startsWith("conjured", ignoreCase = true) -> ItemType.ConjuredItems
-    else -> ItemType.UsualItems
+    this.name.startsWith("conjured", ignoreCase = true) -> ItemType.Conjured
+    else -> ItemType.UsualItem
   }
 
 class Shop(val items: List<Item>) {
+
   fun runForOneDay() {
-    items.forEach(this::updateItem)
-  }
+    items.forEach { item ->
+      // quality
+      when (item.type) {
+        ItemType.AgedBrie -> item.changeQualityBy(if (item.sellIn <= 0) 2 else 1)
 
-  private fun updateItem(item: Item) {
-
-    if (item.type == ItemType.Sulfuras) {
-      return
-    }
-
-    --item.sellIn
-
-    when (item.type) {
-      ItemType.AgedBrie -> increaseQualityWithinBounds(item, if (item.sellIn < 0) 2 else 1)
-
-      ItemType.BackstagePasses -> {
-
-        val increaseBy = when {
-          item.sellIn + 1 <= 5 -> 3
-          item.sellIn + 1 <= 10 -> 2
-          else -> 1
+        ItemType.BackstagePasses -> {
+          item.changeQualityBy(
+            when {
+              item.sellIn <= 0 -> -item.quality
+              item.sellIn <= 5 -> 3
+              item.sellIn <= 10 -> 2
+              else -> 1
+            }
+          )
         }
-
-        increaseQualityWithinBounds(item, increaseBy)
-
-        if (item.sellIn < 0) {
-          item.quality = 0
+        ItemType.Conjured -> item.changeQualityBy(if (item.sellIn <= 0) -4 else -2)
+        ItemType.UsualItem -> item.changeQualityBy(if (item.sellIn <= 0) -2 else -1)
+        ItemType.SulfurasHandOfRagnaros -> {
         }
       }
-      ItemType.ConjuredItems -> decreaseQualityWithinBounds(item, if (item.sellIn < 0) 4 else 2)
-      ItemType.UsualItems -> decreaseQualityWithinBounds(item, if (item.sellIn < 0) 2 else 1)
-      ItemType.Sulfuras -> {
+
+      // sell in
+      if (item.type != ItemType.SulfurasHandOfRagnaros) {
+        --item.sellIn
       }
     }
   }
 
-  private fun decreaseQualityWithinBounds(item: Item, degradeBy: Int) {
-    item.quality = max(item.quality - degradeBy, 0)
-  }
-
-  private fun increaseQualityWithinBounds(item: Item, increaseBy: Int) {
-    item.quality = min(item.quality + increaseBy, 50)
+  private fun Item.changeQualityBy(delta: Int) {
+    quality = (quality + delta).coerceIn(0, 50)
   }
 }
