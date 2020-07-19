@@ -12,10 +12,10 @@ class Shop(val items: List<Item>) {
 
   private val Item.type
     get() = when {
-      this.name == AGED_BRIE -> ItemType.AgedBrie
-      this.name == SULFURAS -> ItemType.SulfurasHandOfRagnaros
-      this.name.startsWith("backstage passes", ignoreCase = true) -> ItemType.BackstagePasses
-      this.name.startsWith("conjured", ignoreCase = true) -> ItemType.Conjured
+      name == AGED_BRIE -> ItemType.AgedBrie
+      name == SULFURAS -> ItemType.SulfurasHandOfRagnaros
+      name.startsWith("backstage passes", ignoreCase = true) -> ItemType.BackstagePasses
+      name.startsWith("conjured", ignoreCase = true) -> ItemType.Conjured
       else -> ItemType.UsualItem
     }
 
